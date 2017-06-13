@@ -1,0 +1,28 @@
+.brand{
+    padding: 10px;
+}
+.brand a, .brand a:hover,.brand a:focus {
+    color: white;
+    text-decoration:none;
+    opacity: 0.8;
+}
+h2{
+    font-size:2em;
+}
+
+body{
+    background-color:#3d93af;
+}
+
+form label{
+    margin-top: 20px;
+}
+
+.formBackground{
+    background-color:#e1e5ed;
+    padding:20px;
+/*    opacity: 0.9;*/
+}
+form button{
+    margin-top: 20px;
+}
