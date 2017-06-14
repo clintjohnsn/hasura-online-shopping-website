@@ -12,10 +12,3 @@
 body{
     background-color:#3d93af;
 }
-#categories, #item-feed{
-    overflow: auto;
-    background-color:#e1e5ed;
-    padding:20px;
-    margin-top:70px;
-    
-}

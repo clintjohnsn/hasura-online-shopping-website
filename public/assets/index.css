@@ -24,3 +24,7 @@ html, body {
 #login, #Browse{
     margin:  10px;
 }
+
+#wrapper a,#wrapper a:hover,#wrapper  a:focus{
+    color:white;
+}
