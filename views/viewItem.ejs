@@ -17,8 +17,63 @@
     <!--    navigation-->
      <%include partials/navigation.ejs %>
     
+    <div class="container content">
     
-    
+        <div class="row itemDetails">
+            <div class="col-xs-12 col-sm-4">
+                <div class="row">
+                    <div class="container-fluid">
+                        <h1>item name</h1>
+                        <figure class="figure">
+                            <img class="img-thumbnail img-responsive mx-auto" src="/assets/home_background.jpg">
+                            <figcaption class="figure-caption">A caption for the above image.</figcaption>
+                        </figure>
+                    </div>
+                </div>
+                <div class="row itemDetails">
+                   <div class="row lead">
+                        <div id="hearts-existing" class="starrr" data-rating='4'></div>
+                        <span id="rated">Ratings: </span><span id="count-existing">4</span>/5 (<span id="noOfRatings">0</span> users)
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-8 description">
+
+                <h1>details</h1>
+                
+                <h5>Description</h5>
+                
+                <h5>Price</h5>
+                <h5>Sold By</h5>
+                <h5>Material</h5>
+                
+                
+                
+
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="row comments">
+            <div class="col-xs-12">
+                <h1>comments</h1>
+                <div id="commentSection">
+                    <div class="form-group">
+                      <label for="comment">Your Review:</label>
+                        <textarea class="form-control" rows="3" id="comment"></textarea>
+                    </div>
+                    <button type="submit" id="submitComment" class="btn btn-success">Submit</button>
+                    <div id="submittedComments">
+                        <div class="commented">
+                            <h6><span class="glyphicon glyphicon-user"></span>randomDude</h6>
+                            <p>good shit</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
     
     
     

@@ -1,0 +1,35 @@
+
+.itemDetails > div{
+    padding-left: 20px;
+    
+}
+.content{
+    background-color: #e1e5ed;
+    height: 100%;
+    min-height: 100%;
+    margin-top:60px;
+}
+
+h1{
+    font-size: 2em;
+    margin-left: 10px;
+}
+#hearts { 
+    color: #ef0b5f;
+}
+#hearts-existing { 
+    color: #ef0b5f;
+}
+
+.lead{
+    margin-left: 0px;
+}
+
+#commentSection{
+    padding-left: 10px;
+}
+
+h6{
+    font-size: 1.3em;
+    color:#2e5ca5;
+}
