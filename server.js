@@ -16,5 +16,12 @@ app.get('/shop',function(req,res){
    res.render('shop'); 
 });
 
+app.get('/viewItem',function(req,res){
+   res.render('viewItem'); 
+});
+
+app.get('/cart',function(req,res){
+   res.render('cart'); 
+});
 app.listen(8080);
 console.log("listening on port 8080");
