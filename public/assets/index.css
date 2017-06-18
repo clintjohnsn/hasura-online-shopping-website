@@ -28,3 +28,7 @@ html, body {
 #wrapper a,#wrapper a:hover,#wrapper  a:focus{
     color:white;
 }
+
+#inputEmail, #inputPassword{
+    margin-top: 10px;
+}
