@@ -18,15 +18,29 @@
      <%include partials/navigation.ejs %>
     
     <div class="container content">
-        <div class="col-xs-12 col-sm-4">
+        <div class="col-xs-12 col-sm-4 itemlist">
             <h1>Items in Cart</h1>
             
-            <button class="btn btn-warning pull-right"><span class="glyphicon glyphicon-play"></span> Proceed to Checkout</button>
+             <div class="list-group">
+              <a href="#" class="list-group-item">First item<span class="badge">Rs 200</span></a>
+              <a href="#" class="list-group-item">Second item<span class="badge">Rs 100</span></a>
+              <a href="#" class="list-group-item">Third item<span class="badge">Rs 100</span></a>
+                
+            </div> 
+            
+            <h4>Total<span id="totalamt" class="pull-right">Rs 400</span></h4>
+            
+            <button class="btn btn-success pull-right"><span class="glyphicon glyphicon-play"></span> Proceed to Checkout</button>
         </div>
         
         <div class="col-xs-12 col-sm-8">
             <h1>Shipping Address</h1>
-        
+            <div class="form-group">
+                <label for="shipaddr">Enter Your Shipping Address</label>
+                <textarea class="form-control" rows="3" id="shipaddr"></textarea>
+                <label for="pincode">Pincode</label>
+                <input class="form-control" id="pincode"></input>
+            </div>
         </div>
     
     </div>
