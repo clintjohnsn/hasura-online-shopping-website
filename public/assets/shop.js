@@ -12,6 +12,22 @@ $(function(){
     $('#selectedItemDropdown').text($(this).text());
     });
     
+    $("#loginbtn").on("click",function(){
+    	$.ajax({
+			  type: 'POST',
+			  url: "http://auth.vcap.me/user/logout",
+			  error: function(e) {	
+			    console.log(e);
+			    alert("FAILED");
+			  },
+			  success:function(data){
+			  	window.location = '/';
+			  },
+			  dataType: "json",
+			  contentType: "application/json"
+			});
+    });
+
     
 });
 
