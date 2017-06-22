@@ -31,7 +31,7 @@ $(function () {
     });
 
     //get user data into var user
-    //async because other req need the user id
+    //sync because other req need the user id
     $.ajax({
         type: 'POST',
         url: "http://auth.vcap.me/user/account/info",
@@ -60,9 +60,89 @@ $(function () {
         contentType: "application/json"
       });
 
+    //an item looks like this
+    // <a href="#" class="list-group-item">First item<span class="badge">Rs 200</span></a>
 
+    var totalPrice = 0;
+    //post req to get all items in cart
+    $.ajax({
+	  type: 'POST',
+	  url: "http://data.vcap.me/v1/query",
+	  data: JSON.stringify({
+	    "type": "select",
+	    "args": {
+	      "table": "carts",
+	      "columns" :["item_id","retailer_id",{
+	      	"name":"item_details",
+	      	"columns":["name"]
+	      }],
+	    "where" :{
+	        "user_id" :user.userid  
+	      }
+	    }
+	  }),
+	  error: function(e) {  
+	    console.log(e);
+	  },
+	  success:function(data){
+	  	for (var i = data.length - 1; i >= 0; i--) {
+	  		var itemname = data[i].item_details.name;
+	  		//post req for the price of each item
+	  		//req is sync becus itemname of each item needs to be rendered after each request in the loop
+	  		    $.ajax({
+				  type: 'POST',
+				  url: "http://data.vcap.me/v1/query",
+				  async: false,
+				  data: JSON.stringify({
+				    "type": "select",
+				    "args": {
+				      "table": "sellingItems",
+				      "columns" :["price"],
+					  	"where" :{
+				       		"item_id" :data[i].item_id,
+					       	"retailer_id": data[i].retailer_id 
+				      }
+				    }
+				  }),
+				  error: function(e) {  
+				    console.log(e);
+				  },
+				  success:function(data){
+			  		//insert values into the item format
+				  	var listItem = `<a href="#" class="list-group-item">${itemname}<span class="badge">Rs ${data[0].price}</span></a>`
+				  	//append to the list
+				  	$('.list-group').append(listItem);
+				  	//total
+				  	totalPrice += data[0].price;
+				  },
+				  dataType: "json",
+				  contentType: "application/json"
+				});
+	  		}
 
+	  	//totalPrice to be inserted
+	  	$('#totalPrice').html(totalPrice);	
 
+	  },
+	  dataType: "json",
+	  contentType: "application/json"
+	});
+
+    //proceed to checkout
+    $("#proceedToCheckout").on('click',function(){
+	    //make sure shipping address and pincode are there
+    	if ($('#shipaddr').val().length > 0 && $('#pincode').val().length > 0 ){
+    		//proceed
+    	}
+    	else{
+    		if ($('#shipaddr').val().length == 0){
+    			alert("Please fill in a shipping address first.");
+    		}
+    		else{
+    			alert("Please fill in a pincode first.");
+    		}
+    	}
+    });
 
 
 });
