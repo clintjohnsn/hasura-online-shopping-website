@@ -1,5 +1,15 @@
 $(function () {
+	
+	//setup ajax
 
+	 $.ajaxSetup({
+    	xhrFields: {
+       	withCredentials: true
+	    },
+	    crossDomain: true
+    });
+	 
+	 //sign in btn implementation
 	$('#signinbtn').on("click",function () {
 		
 		if($("#inputEmail").val().length!=0 && $("#inputPassword").val().length !=0 ){
@@ -18,7 +28,7 @@ $(function () {
 			  },
 			  success:function(data){
 			  	
-			  	// window.location = '/shop';
+			  	window.location = '/shop';
 
 			  },
 			  dataType: "json",

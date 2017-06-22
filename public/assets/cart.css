@@ -19,3 +19,6 @@ opacity: 0.7;
     overflow-y: auto;
     overflow-x: hidden;
 }
+#proceedToCheckout{
+	margin-top: 40px;
+}

@@ -23,42 +23,54 @@
             <div class="col-xs-12 col-sm-4">
                 <div class="row">
                     <div class="container-fluid">
-                        <h1>item name</h1>
+                        <h1><%=data.item_details.name%></h1>
                         <figure class="figure">
-                            <img class="img-thumbnail img-responsive mx-auto" src="/assets/home_background.jpg">
-                            <figcaption class="figure-caption">A caption for the above image.</figcaption>
+
+                            <% if (data.item_details.img == null){ %>
+                                <%  data.item_details.img = {"location":"/images/default.jpg"}; %> 
+                                <% } %>
+
+                            <img class="img-thumbnail img-responsive mx-auto" src=<%=data.item_details.img.location%>>
+                            <!-- <figcaption class="figure-caption">A caption for the above image.</figcaption> -->
                         </figure>
                     </div>
                 </div>
                 <div class="row itemDetails">
                    <div class="row lead">
-                        <div id="hearts-existing" class="starrr" data-rating='4'></div>
-                        <span id="rated">Ratings: </span><span id="count-existing">4</span>/5 (<span id="noOfRatings">0</span> users)
+                        <div id="hearts-existing" class="starrr" data-rating='0'></div>
+                        <span id="rated">Ratings: </span><span id="count-existing">0</span>/5 (<span id="noOfRatings">0</span> users)
                     </div>
                     <div class="container-fluid">
-                     <button class="btn btn-warning btn-lg"><span class="glyphicon glyphicon-shopping-cart"></span> Add to Cart</button>
+                     <button id ="addToCart" class="btn btn-warning btn-lg"><span class="glyphicon glyphicon-shopping-cart"></span> Add to Cart</button>
                     </div>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-8 description">
 
                 <h5>Brand</h5>
-                <p>brandname</p>
+                <p><%=data.item_details.brand%></p>
+
                 <h5>Description</h5>
-                <p>isos if j judshf disuf dhkf a hkh jjd ifh uas jsdhfj j jhdsf jkh
-                isos if j judshf disuf dhkf a hkh jjd ifh uas jsdhfj j jhdsf jkh
-                isos if j judshf disuf dhkf a hkh jjd ifh uas jsdhfj j jhdsf jkh
-                isos if j judshf disuf dhkf a hkh jjd ifh uas jsdhfj j jhdsf jkh
-                isos if j judshf disuf dhkf a hkh jjd ifh uas jsdhfj j jhdsf jkh
-                isos if j judshf disuf dhkf a hkh jjd ifh uas jsdhfj j jhdsf jkh</p>
+                <p><%=data.item_details.Description%></p>
+                
                 <h5>Price</h5>
-                <p>$3000</p>
+                <p>Rs <%=data.price%></p>
+                
                 <h5>Sold By</h5>
-                <p>the bros</p>
+                <p><%=data.retailer_details.name%> @ <%=data.retailer_details.location%></p>
+                
                 <h5>Material</h5>
-                <p>khaki mofo</p>
+                <p><%=data.item_details.Material%></p>
+
                 <h5>Date Added</h5>
-                <p>15 Jan 2017</p>
+
+                <% var date = new Date(data.added); %>
+                <% var dd = date.getDate(); %>
+                <% var mm = date.getMonth()+ 1 ; %>
+                <% var yyyy = date.getFullYear(); %>
+                <% var ddmmyyyy = dd + '/' + mm + '/' + yyyy; %>
+
+                <p><%=ddmmyyyy%></p>
                 
             </div>
         </div>
@@ -66,18 +78,18 @@
 
         <div class="row comments">
             <div class="col-xs-12">
-                <h1>comments</h1>
+                <h1>comments <span class="glyphicon glyphicon-link glyphicon-menu-down"></span></h1>
+                <hr>
                 <div id="commentSection">
-                    <div class="form-group">
-                      <label for="comment">Your Review:</label>
-                        <textarea class="form-control" rows="3" id="comment"></textarea>
-                    </div>
-                    <button type="submit" id="submitComment" class="btn btn-success">Submit</button>
-                    <div id="submittedComments">
-                        <div class="commented">
-                            <h6><span class="glyphicon glyphicon-user"></span>randomDude</h6>
-                            <p>good shit</p>
+                    <div id = "newComment">
+                        <div class="form-group">
+                          <label for="comment">Your Review:</label>
+                            <textarea class="form-control" rows="3" id="comment"></textarea>
                         </div>
+                        <button type="submit" id="submitComment" class="btn btn-success">Submit</button>
+                    </div>
+                    <div id="submittedComments">
+                        <!-- ajax to fetch comments here -->
                     </div>
                 </div>
             </div>

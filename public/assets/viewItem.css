@@ -43,3 +43,27 @@ h5{
     overflow-y: scroll;
     
 }
+span.glyphicon-link {
+    font-size: 0.6em;
+}
+
+.comments{
+    margin-top: 40px;
+}
+
+hr{
+    border-color: #979aa0;
+}
+
+#yourComment{
+    background-color: #cbd0d8;
+    padding: 20px 10px;
+}
+#userRating, .glyphicon-star, #editOption{
+    font-size: 0.7em;
+    color: grey;
+}
+
+#editOption:hover{
+    text-decoration: underline;
+}

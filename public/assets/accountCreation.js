@@ -1,6 +1,14 @@
 $(function(){
 	
-
+	//set up ajax
+	 $.ajaxSetup({
+    	xhrFields: {
+       	withCredentials: true
+	    },
+	    crossDomain: true
+    });
+	 
+	 //sign up button implementation
 	$("#signupbtn").on("click",function () {
 
 		if ($("#inputPassword")[0].value === $("#ReInputPassword")[0].value && $("#inputPassword")[0].value.length >= 8 &&
@@ -18,9 +26,10 @@ $(function(){
 			  error: function(e) {	
 			    console.log(e);
 			    alert("FAILED: " + JSON.parse(e.responseText).code+ "\n username and email must be unique");
-			    location.reload();
+			    // location.reload();
 			  },
 			  success:function(data){
+			  	//now add the hasura_id to customUsers table 
 			  		$.ajax({
 					  type: 'POST',
 					  url: "http://data.vcap.me/v1/query",
@@ -31,6 +40,7 @@ $(function(){
 								"table": "usersCustom",
 								"objects" :[{
 										"id": data.hasura_id,
+										"name":$("#inputFullname").val()
 									}]
 							}
 						}),
@@ -39,8 +49,6 @@ $(function(){
 					    alert("FAILED: " + JSON.parse(e.responseText).message);
 					  },
 					  success:function(data){
-					  	
-					  		
 					  	window.location = '/shop';	
 					  },
 					  dataType: "json",

@@ -1,3 +1,4 @@
+//rating star js
 // Starrr plugin (https://github.com/dobtco/starrr)
 var __slice = [].slice;
 
@@ -115,13 +116,304 @@ $( document ).ready(function() {
   });
 });
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var username;
+var userid;
+var useremail;
+var user = {username, userid, useremail}
+
+function editOptionFunction () {
+      //make new comment form visible
+      $('#newComment').slideDown();
+      //get content of your comment
+      var comment = $('#yourComment p').html();
+      //fill text area with existing comment
+      $('#newComment textarea').val(comment);
+      // hide the existing comment
+      $('#yourComment').hide();
+      //change submit comment button to update comment
+      $("#submitComment").html("Update"); 
+   }
+
 $(function(){
     
+   //set up ajax to use the cookie
+    $.ajaxSetup({
+      xhrFields: {
+        withCredentials: true
+      },
+      crossDomain: true
+    });
+
+    //implement logout 
+    $("#loginbtn").on("click",function(){
+      $.ajax({
+        type: 'POST',
+        url: "http://auth.vcap.me/user/logout",
+        error: function(e) {  
+          console.log(e);
+          window.location = '/';
+        },
+        success:function(data){
+          window.location = '/';
+        },
+        dataType: "json",
+        contentType: "application/json"
+      });
+    });
+
+    //get user data into var user and 
+    //change login to logout, change signin to user name
+    $.ajax({
+        type: 'POST',
+        url: "http://auth.vcap.me/user/account/info",
+        async: false,
+        error: function(e) {  
+
+          //hide cart if user is not logged in
+          $('#cart').hide();
+
+          //hide addtocart button if user is not logged in
+          $('#addToCart').hide();
+
+          //hide new comment if user is not logged in
+           $('#newComment').hide();
+
+          //if not signed in, add link to /accountCreation
+          $("#signedInUser").on("click",function(){
+            window.location = '/accountCreation';
+          });
+        },
+        success:function(data){
+          user.userid = data.hasura_id;
+          user.username = data.username;
+          user.useremail = data.email;
+
+          if (user.userid > 0){
+            console.log("You are logged in as "+ user.userid + ": " + user.useremail);
+            $("#changeToLogout").html("Logout");
+            $("#signedInUser").html(user.username);
+          }
+        },
+        dataType: "json",
+        contentType: "application/json"
+      });
+
+    //get url parameters
+
+    var urlParams;
+      (window.onpopstate = function () {
+          var match,
+              pl     = /\+/g,  // Regex for replacing addition symbol with a space
+              search = /([^&=]+)=?([^&]*)/g,
+              decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+              query  = window.location.search.substring(1);
+
+          urlParams = {};
+          while (match = search.exec(query))
+             urlParams[decode(match[1])] = decode(match[2]);
+      })();
+    /*
+      '/viewItem?item=3&ret=4' becomes
+      urlParams={
+        "item": 3,
+        "ret" :4
+      }
+    */
+
+    //review
+
+    //show/hide the comment section
+    $(".glyphicon-link").on('click',function () {
+        $("#commentSection").slideToggle();
+        
+    });
+
+    //fetch all reviews on the item id=urlParams.item
+    $.ajax({
+        type: 'POST',
+        url: "http://data.vcap.me/v1/query",
+        data: JSON.stringify({
+          "type": "select",
+          "args": {
+            "table": "reviews",
+            "columns":["user_id","rating","review",{
+              "name": "user_details",
+              "columns":["name"]
+            }],
+            "where": {"item_id": urlParams.item }
+          }
+        }),
+        error: function(e) {  
+          console.log(e);
+        },
+        success:function(data){
+          //add the data as comments
+          for (var i = data.length - 1; i >= 0; i--) {
+            //your comment needs to be highlighted cus your'e a special snowflake
+            if (data[i].user_id === user.userid ){
+               var commentFormat=`<div id ="yourComment" class='commented'><h6><span class='glyphicon glyphicon-user'></span> ${data[i].user_details.name} <span id ="editOption">  Edit</span></h6><p>${data[i].review}</p></div>`;
+               //keep your comment on top
+              $('#submittedComments').prepend(commentFormat);
+              //hide the new comment box, now only edit option exists
+              $('#newComment').hide();
+              //edit option onclick function
+             $("#editOption").on('click',editOptionFunction);
+            }
+            else{
+                //if user has rated
+                if (data[i].rating){
+                  var comment = `<div class="commented"><h6><span class="glyphicon glyphicon-user"></span> ${data[i].user_details.name} <span id = "userRating">${data[i].rating}</span><span class="glyphicon glyphicon-star"></span></h6><p>${data[i].review}</p></div>`;
+                }
+                else{ //no rating available
+                  var comment = `<div class="commented"><h6><span class="glyphicon glyphicon-user"></span> ${data[i].user_details.name}</h6><p>${data[i].review}</p></div>`;
+                }
+              $("#submittedComments").append(comment);
+            }
+          }  
+
+        },
+        dataType: "json",
+        contentType: "application/json"
+      });
+
+    //new comment 
+
+    //when a new comment is submitted   
    $("#submitComment").on("click",function(){
-      var username="You";
-        var comment=document.getElementById('comment').value;
-        var commentFormat=`<div class='commented'><h6><span class='glyphicon glyphicon-user'></span>${username}</h6><p>${comment}</p></div>`;
-       $('#submittedComments').prepend(commentFormat);
+      //get comment
+      var comment=document.getElementById('comment').value;
+      //get user name
+       $.ajax({
+      type: 'POST',
+      url: "http://data.vcap.me/v1/query",
+      data: JSON.stringify({
+        "type": "select",
+        "args": {
+          "table": "usersCustom",
+          "columns":["name"],
+          "where": {"id": user.userid}
+        }
+      }),
+      error: function(e) {  
+        console.log(e);
+      },
+      success:function(data){
+        //prepare comment
+        var commentFormat=`<div id ="yourComment" class='commented'><h6><span class='glyphicon glyphicon-user'></span> ${data[0].name} <span id ="editOption">  Edit</span></h6><p>${comment}</p></div>`;
+
+        //post req to insert the comment
+         $.ajax({
+            type: 'POST',
+            url: "http://data.vcap.me/v1/query",
+            data: JSON.stringify({
+              "type": "insert",
+              "args": {
+                "table": "reviews",
+                "objects":[{
+                  "user_id":user.userid,
+                  "item_id":urlParams.item,
+                  "review":comment
+                }]
+              }
+            }),
+            error: function(e) {  
+            //try updating the new comment
+                $.ajax({
+                  type: 'POST',
+                  url: "http://data.vcap.me/v1/query",
+                  data: JSON.stringify({
+                    "type": "update",
+                    "args": {
+                      "table": "reviews",
+                      "$set" : {
+                        "review" : comment,
+                      },
+                      
+                    "where" :{"item_id":urlParams.item,
+                        "user_id" :user.userid  
+                      }
+                    }
+                  }),
+                  error: function(e) {  
+                    console.log(e);
+                  },
+                  success:function(data){
+                    //keep your comment on top
+                    $('#submittedComments').prepend(commentFormat);
+                    //hide the new comment box, now only edit option exists
+                    $('#newComment').hide();
+                    //edit option onclick function
+                   $("#editOption").on('click',editOptionFunction);
+                  },
+                  dataType: "json",
+                  contentType: "application/json"
+                });
+            },
+            success:function(data){
+              //keep your comment on top
+              $('#submittedComments').prepend(commentFormat);
+              //hide the new comment box, now only edit option exists
+              $('#newComment').hide();
+              //edit option onclick function
+             $("#editOption").on('click',editOptionFunction);
+            },
+            dataType: "json",
+            contentType: "application/json"
+          });
+      },
+      dataType: "json",
+      contentType: "application/json"
+    });
    });
+
+   
+    //rating
+
+
+
+    //addToCart
+    $('#addToCart').on('click',function () {
+       //post req to add to table carts
+        $.ajax({
+            type: 'POST',
+            url: "http://data.vcap.me/v1/query",
+            data: JSON.stringify({
+              "type": "insert",
+              "args": {
+                "table":"carts",
+                "objects":[{
+                  "user_id": user.userid,
+                  "item_id": urlParams.item,
+                  "retailer_id": urlParams.ret
+                }]
+              }
+            }),
+            error: function(e) {  
+              //already in cart?
+              if (JSON.parse(e.responseText).error == 'Uniqueness violation. duplicate key value violates unique constraint "carts_pkey"'){
+                alert("Already in cart");
+                $('#addToCart').prop("disabled",true);
+                var added = "<span class='glyphicon glyphicon-ok'></span> In Cart"
+                $('#addToCart').html(added);
+              }
+              else{
+                console.log(e);
+              }
+            },
+            success:function(data){
+              var added = "<span class='glyphicon glyphicon-ok'></span> In Cart"
+              $('#addToCart').html(added);
+             $('#addToCart').prop("disabled",true);
+
+            },
+            dataType: "json",
+            contentType: "application/json"
+          });
+
+
+
+    });
     
 });
