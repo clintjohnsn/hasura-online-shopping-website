@@ -22,3 +22,15 @@ opacity: 0.7;
 #proceedToCheckout{
 	margin-top: 40px;
 }
+
+.list-group li:hover{
+	background-color:#f2f2f2;
+
+}
+.remove{
+	font-size: 0.7em;
+
+}
+.remove:hover{
+	text-decoration: underline;
+}

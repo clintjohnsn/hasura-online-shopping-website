@@ -3,6 +3,17 @@ var userid;
 var useremail;
 var user = {username, userid, useremail}
 
+//function to extract query string data
+function getParameterByName(name, url) {
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+
 $(function () {
 	
 	//setup ajax
@@ -39,10 +50,12 @@ $(function () {
         error: function(e) {  
         	//tell user they aren't logged in
         	alert("You are not logged in. You need to log in to access your cart");
+            window.location = '/';
+
           //if not signed in, add link to /accountCreation
-          $("#signedInUser").on("click",function(){
-            window.location = '/accountCreation';
-          });
+          // $("#signedInUser").on("click",function(){
+          //   window.location = '/accountCreation';
+          // });
         },
         success:function(data){
           user.userid = data.hasura_id;
@@ -87,6 +100,8 @@ $(function () {
 	  success:function(data){
 	  	for (var i = data.length - 1; i >= 0; i--) {
 	  		var itemname = data[i].item_details.name;
+	  		var itemId = data[i].item_id;
+	  		var retailerId = data[i].retailer_id;
 	  		//post req for the price of each item
 	  		//req is sync becus itemname of each item needs to be rendered after each request in the loop
 	  		    $.ajax({
@@ -99,8 +114,8 @@ $(function () {
 				      "table": "sellingItems",
 				      "columns" :["price"],
 					  	"where" :{
-				       		"item_id" :data[i].item_id,
-					       	"retailer_id": data[i].retailer_id 
+				       		"item_id" :itemId,
+					       	"retailer_id": retailerId
 				      }
 				    }
 				  }),
@@ -109,16 +124,55 @@ $(function () {
 				  },
 				  success:function(data){
 			  		//insert values into the item format
-				  	var listItem = `<a href="#" class="list-group-item">${itemname}<span class="badge">Rs ${data[0].price}</span></a>`
+			  		var linkToItem = `/viewItem?item=${itemId}&ret=${retailerId}`;
+				  	var listItem = `<li class="list-group-item"><a href = ${linkToItem} >${itemname}</a> <span class = "remove label label-warning">remove</span><span class="badge">Rs ${data[0].price}</span></li>`
 				  	//append to the list
 				  	$('.list-group').append(listItem);
-				  	//total
+
+				  	//totalling the amt
 				  	totalPrice += data[0].price;
 				  },
 				  dataType: "json",
 				  contentType: "application/json"
 				});
 	  		}
+
+
+	  	//add remove option on li
+	  	 $('.remove').on('click',function () {
+	    	//get item_id
+	    	var itemUrl = $(this).parent().find('a').attr('href');
+	    	var itemId = getParameterByName('item',itemUrl);
+	    	var retailerId = getParameterByName('ret', itemUrl);
+
+	    	//post req to delete item
+	    	$.ajax({
+				  type: 'POST',
+				  url: "http://data.vcap.me/v1/query",
+				  data: JSON.stringify({
+				    "type": "delete",
+				    "args": {
+				      "table": "carts",
+					  	"where" :{
+					  		"item_id" :itemId,
+					  		"retailer_id" : retailerId,
+					  		"user_id" :user.userid
+					  	}
+				    }
+				  }),
+				  error: function(e) {  
+				    console.log(e);
+				  },
+				  success:function(data){
+				  	window.location = '/cart';
+				  },
+				  dataType: "json",
+				  contentType: "application/json"
+				});
+
+
+
+	    });
 
 	  	//totalPrice to be inserted
 	  	$('#totalPrice').html(totalPrice);	
@@ -144,5 +198,5 @@ $(function () {
     	}
     });
 
-
+   
 });
