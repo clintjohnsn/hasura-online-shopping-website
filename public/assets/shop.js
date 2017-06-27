@@ -3,6 +3,38 @@ var userid;
 var useremail;
 var user = {username, userid, useremail}
 
+function renderPage(data) {
+	//clear the list
+	$('#itemContainer').html('');
+	//if no data obtained, tell user
+	if(data[0] == null){
+		$('#itemContainer').html('nothing found :(');
+	}
+	// for all the items in the array data
+	for (var i = data.length - 1; i >= 0; i--) {
+		//prepare the link to the item in /viewItem
+		var linkToItem = `/viewItem?item=${data[i].item_id}&ret=${data[i].retailer_id}`;
+		//put default img for item if it doesnt exist
+		if(data[i].item_details.img == null){
+			data[i].item_details.img = {"location":"/images/default.png"};
+		}
+		//prepare the item model
+		var itemModel = `<div class="col-xs-12 col-sm-3 item">
+							<a href=${linkToItem}>
+								<figure class="figure">
+									<h3>${data[i].item_details.name}</h3>
+	                            	<img class="img-thumbnail img-responsive mx-auto" src=${data[i].item_details.img.location}>
+	                            	<figcaption class="figure-caption">
+	                            	 ${data[i].retailer_details.name} - Rs ${data[i].price}</figcaption>
+	                        	</figure>
+	                        </a>
+	                    </div> `;	
+		//append the item models
+		$('#itemContainer').append(itemModel);
+	}
+}
+
+
 $(function(){
     //some js for the ui
 	    //make categories togglable
@@ -75,9 +107,109 @@ $(function(){
 			  contentType: "application/json"
 			});
 
+    //get items list using a post req
+    //get ALL items
+    $.ajax({
+		  type: 'POST',
+		  url: "http://data.vcap.me/v1/query",
+		  data: JSON.stringify({
+		    "type": "select",
+		    "args": {
+		      "table": "sellingItems",
+		      "columns": ["item_id","retailer_id","price",{
+			      	"name":"item_details",
+			      	"columns":["name","img"]
+			      },{
+			      	"name":"retailer_details",
+			      	columns:["name"]
+			      }]
+		    }
+		  }),
+		  error: function(e) {  
+		    console.log(e);
+		  },
+		  success:function(data){
+	  	    //render the items
+		    renderPage(data);
+		  },
+		  dataType: "json",
+		  contentType: "application/json"
+		});
 
 
+    //on click handlers for categories
+    $(".nav-stacked li").on("click",function(){
+    	//get name of category clicked
+    	var categoryName = $(this).children('a').html().toLowerCase();
+    	//post req to get the list of items
+    		//if categoryName selected is "ALL"
+    	if (categoryName === "all"){
+    		//post req for all list items
+		   $.ajax({
+				  type: 'POST',
+				  url: "http://data.vcap.me/v1/query",
+				  data: JSON.stringify({
+				    "type": "select",
+				    "args": {
+				      "table": "sellingItems",
+				      "columns": ["item_id","retailer_id","price",{
+					      	"name":"item_details",
+					      	"columns":["name","img"]
+					      },{
+					      	"name":"retailer_details",
+					      	columns:["name"]
+					      }]
+				    }
+				  }),
+				  error: function(e) {  
+				    console.log(e);
+				  },
+				  success:function(data){
+			  	    //render the items
+				    renderPage(data);
+				  },
+				  dataType: "json",
+				  contentType: "application/json"
+				});
+    	}
+    		//if category name is "EVENTS"
+    	else if (categoryName === "events"){
 
+    		console.log(categoryName);
+
+    	}
+    		//for all other category names
+    	else{
+    		//post req with the "where" = categoryName
+		   $.ajax({
+				  type: 'POST',
+				  url: "http://data.vcap.me/v1/query",
+				  data: JSON.stringify({
+				    "type": "select",
+				    "args": {
+				      "table": "sellingItems",
+				      "columns": ["item_id","retailer_id","price",{
+					      	"name":"item_details",
+					      	"columns":["name","img"]
+					      },{
+					      	"name":"retailer_details",
+					      	columns:["name"]
+					      }],
+					"where":{"category":categoryName}
+				    }
+				  }),
+				  error: function(e) {  
+				    console.log(e);
+				  },
+				  success:function(data){
+			  	    //render the items
+				    renderPage(data);
+				  },
+				  dataType: "json",
+				  contentType: "application/json"
+				});
+    	}
+    });
 
 
 
