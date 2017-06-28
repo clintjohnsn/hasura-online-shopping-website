@@ -111,8 +111,9 @@ $( document ).ready(function() {
   });
   
   $('#hearts-existing').on('starrr:change', function(e, value){
-    $('#rated').html("You rated: ");  
+    $('#rated').html("You rated: ");
     $('#count-existing').html(value);
+    $('#countRatings').hide();  
   });
 });
 
@@ -253,21 +254,38 @@ $(function(){
           for (var i = data.length - 1; i >= 0; i--) {
             //your comment needs to be highlighted cus your'e a special snowflake
             if (data[i].user_id === user.userid ){
-               var commentFormat=`<div id ="yourComment" class='commented'><h6><span class='glyphicon glyphicon-user'></span> ${data[i].user_details.name} <span id ="editOption">  Edit</span></h6><p>${data[i].review}</p></div>`;
+              //if you have rated
+              if (data[i].rating){
+                 var commentFormat=`<div id ="yourComment" class='commented'>
+                   <h6><span class='glyphicon glyphicon-user'></span> ${data[i].user_details.name}
+                   <span id = "userRating">${data[i].rating}</span><span class="glyphicon glyphicon-star"></span>
+                   <span id ="editOption">  Edit</span></h6> 
+                   <p>${data[i].review}</p></div>`;
+              }
+              //if you have not rated
+              else{
+                 var commentFormat=`<div id ="yourComment" class='commented'>
+                   <h6><span class='glyphicon glyphicon-user'></span> ${data[i].user_details.name}
+                    <span id ="editOption">  Edit</span></h6>
+                   <p>${data[i].review}</p></div>`;
+              }
                //keep your comment on top
               $('#submittedComments').prepend(commentFormat);
               //hide the new comment box, now only edit option exists
               $('#newComment').hide();
               //edit option onclick function
              $("#editOption").on('click',editOptionFunction);
+            
             }
             else{
                 //if user has rated
                 if (data[i].rating){
-                  var comment = `<div class="commented"><h6><span class="glyphicon glyphicon-user"></span> ${data[i].user_details.name} <span id = "userRating">${data[i].rating}</span><span class="glyphicon glyphicon-star"></span></h6><p>${data[i].review}</p></div>`;
+                  var comment = `<div class="commented"><h6><span class="glyphicon glyphicon-user"></span>${data[i].user_details.name} 
+                  <span id = "userRating">${data[i].rating}</span><span class="glyphicon glyphicon-star"></span></h6><p>${data[i].review}</p></div>`;
                 }
                 else{ //no rating available
-                  var comment = `<div class="commented"><h6><span class="glyphicon glyphicon-user"></span> ${data[i].user_details.name}</h6><p>${data[i].review}</p></div>`;
+                  var comment = `<div class="commented"><h6><span class="glyphicon glyphicon-user"></span> 
+                    ${data[i].user_details.name}</h6><p>${data[i].review}</p></div>`;
                 }
               $("#submittedComments").append(comment);
             }
@@ -318,9 +336,11 @@ $(function(){
                 }]
               }
             }),
-            error: function(e) {  
-            //try updating the new comment
-                $.ajax({
+            error: function(e) {
+            if (JSON.parse(e.responseText).error == 'Uniqueness violation. duplicate key value violates unique constraint "reviews_pkey"'){
+              //insert failed,try updating the new comment
+              console.log("There is already a review/ rating, trying to update..")              
+              $.ajax({
                   type: 'POST',
                   url: "http://data.vcap.me/v1/query",
                   data: JSON.stringify({
@@ -340,6 +360,7 @@ $(function(){
                     console.log(e);
                   },
                   success:function(data){
+                    console.log("update successful");
                     //keep your comment on top
                     $('#submittedComments').prepend(commentFormat);
                     //hide the new comment box, now only edit option exists
@@ -350,6 +371,9 @@ $(function(){
                   dataType: "json",
                   contentType: "application/json"
                 });
+              }else{
+                console.log(e);
+              }
             },
             success:function(data){
               //keep your comment on top
@@ -369,9 +393,95 @@ $(function(){
    });
 
    
-    //rating
+    //ratings- get the avg rating and no of ratings data for the item
+    //a post req to get aggregate data from the view
+    $.ajax({
+        type: 'POST',
+        url: "http://data.vcap.me/v1/query",
+        data: JSON.stringify({
+          "type": "select",
+          "args": {
+            "table": "ratingsView",
+            "columns":["*"],
+            "where" :{"item_id":urlParams.item }
+          }
+        }),
+        error: function(e) {  
+          console.log(e);
+        },
+        success:function(data){
+          if (data[0].avg_rating == null){
+              data[0].avg_rating = 0;
+          }
+          //display the avg rating
+          $("#count-existing").html(data[0].avg_rating);
+          //display the no of ratings
+          $("#noOfRatings").html(data[0].no_of_ratings);
+
+        },
+        dataType: "json",
+        contentType: "application/json"
+      });
+    //insert/update user ratings
+    $('#hearts-existing').on('starrr:change', function(e, value){
+      //value is the rating the user gave
+      //post req to insert
+      $.ajax({
+        type: 'POST',
+        url: "http://data.vcap.me/v1/query",
+        data: JSON.stringify({
+          "type": "insert",
+          "args": {
+            "table": "reviews",
+            "objects":[{
+              "item_id":urlParams.item,
+              "user_id":user.userid,
+               "rating":value 
+            }]
+          }
+        }),
+        error: function(e) {  
+          if (JSON.parse(e.responseText).error == 'Uniqueness violation. duplicate key value violates unique constraint "reviews_pkey"'){
+            console.log("There is already a review/ rating, trying to update..")
+            //another rating/review exists ,gotta update
+            //post req to update reviews table 
+              $.ajax({
+                  type: 'POST',
+                  url: "http://data.vcap.me/v1/query",
+                  data: JSON.stringify({
+                    "type": "update",
+                    "args": {
+                      "table": "reviews",
+                      "$set" : {
+                        "rating" : value,
+                      },
+                      
+                    "where" :{"item_id":urlParams.item,
+                        "user_id" :user.userid  
+                      }
+                    }
+                  }),
+                  error: function(e) {  
+                    console.log(e);
+                  },
+                  success:function(data){
+                    console.log("review/rating updated");
+                  },
+                  dataType: "json",
+                  contentType: "application/json"
+                });
+
+          }else{
+            console.log(e);
+          }
+        },
+        success:function(data){},
+        dataType: "json",
+        contentType: "application/json"
+      });
 
 
+    });
 
     //addToCart
     $('#addToCart').on('click',function () {
