@@ -11,7 +11,7 @@ function renderPage(data) {
 		$('#itemContainer').html('nothing found :(');
 	}
 	// for all the items in the array data
-	for (var i = data.length - 1; i >= 0; i--) {
+	for (var i = 0; i < data.length; i++) {
 		//prepare the link to the item in /viewItem
 		var linkToItem = `/viewItem?item=${data[i].item_id}&ret=${data[i].retailer_id}`;
 		//put default img for item if it doesnt exist
@@ -108,7 +108,7 @@ $(function(){
 			});
 
     //get items list using a post req
-    //get ALL items
+    //initial req, get "all" items in desc time of adding
     $.ajax({
 		  type: 'POST',
 		  url: "http://data.vcap.me/v1/query",
@@ -116,13 +116,14 @@ $(function(){
 		    "type": "select",
 		    "args": {
 		      "table": "sellingItems",
-		      "columns": ["item_id","retailer_id","price",{
+		      "columns": ["item_id","retailer_id","price","added",{
 			      	"name":"item_details",
 			      	"columns":["name","img"]
 			      },{
 			      	"name":"retailer_details",
 			      	columns:["name"]
-			      }]
+			      }],
+			"order_by":["-added"]
 		    }
 		  }),
 		  error: function(e) {  
@@ -142,9 +143,23 @@ $(function(){
     	//get name of category clicked
     	var categoryName = $(this).children('a').html().toLowerCase();
     	//post req to get the list of items
-    		//if categoryName selected is "ALL"
+
+		//check what the "sort by" dropdown menu says and set the "order_by" property of the data api
+		var sortby = $("#selectedItemDropdown").html();
+		if (sortby == 'New'){
+			var orderby = "-added";
+		}
+		else if (sortby == 'Price-Low to High'){
+			var orderby = "price"; 			
+		}
+		else if (sortby == 'Price-High to Low'){
+			var orderby = "-price";
+		}
+
+		//if categoryName selected is "ALL"
     	if (categoryName === "all"){
-    		//post req for all list items
+
+		//post req for all list items
 		   $.ajax({
 				  type: 'POST',
 				  url: "http://data.vcap.me/v1/query",
@@ -152,13 +167,14 @@ $(function(){
 				    "type": "select",
 				    "args": {
 				      "table": "sellingItems",
-				      "columns": ["item_id","retailer_id","price",{
+				      "columns": ["item_id","retailer_id","price","added",{
 					      	"name":"item_details",
 					      	"columns":["name","img"]
 					      },{
 					      	"name":"retailer_details",
 					      	columns:["name"]
-					      }]
+					      }],
+					  "order_by":[orderby]
 				    }
 				  }),
 				  error: function(e) {  
@@ -188,14 +204,15 @@ $(function(){
 				    "type": "select",
 				    "args": {
 				      "table": "sellingItems",
-				      "columns": ["item_id","retailer_id","price",{
+				      "columns": ["item_id","retailer_id","price","added",{
 					      	"name":"item_details",
 					      	"columns":["name","img"]
 					      },{
 					      	"name":"retailer_details",
 					      	columns:["name"]
 					      }],
-					"where":{"category":categoryName}
+					"where":{"category":categoryName},
+					"order_by":[orderby]
 				    }
 				  }),
 				  error: function(e) {  
@@ -211,7 +228,12 @@ $(function(){
     	}
     });
 
+    //on-click handlers for the sortBy menu
+    $('.dropdown-menu a').click(function(){
+		//trigger a click event on the category nav
+		$(".nav-stacked").find(".active").trigger("click");
 
+    });
 
 
 });
