@@ -76,20 +76,17 @@ $(function () {
     //an item looks like this
     // <a href="#" class="list-group-item">First item<span class="badge">Rs 200</span></a>
 
-    var totalPrice = 0;
     //post req to get all items in cart
+    //using view cartInfo
     $.ajax({
 	  type: 'POST',
 	  url: "http://data.vcap.me/v1/query",
 	  data: JSON.stringify({
 	    "type": "select",
 	    "args": {
-	      "table": "carts",
-	      "columns" :["item_id","retailer_id",{
-	      	"name":"item_details",
-	      	"columns":["name"]
-	      }],
-	    "where" :{
+	      "table": "cartInfo",
+	      "columns" :["item_id","retailer_id","price","name"],
+		   "where" :{
 	        "user_id" :user.userid  
 	      }
 	    }
@@ -99,44 +96,14 @@ $(function () {
 	  },
 	  success:function(data){
 	  	for (var i = data.length - 1; i >= 0; i--) {
-	  		var itemname = data[i].item_details.name;
-	  		var itemId = data[i].item_id;
-	  		var retailerId = data[i].retailer_id;
-	  		//post req for the price of each item
-	  		//req is sync becus itemname of each item needs to be rendered after each request in the loop
-	  		    $.ajax({
-				  type: 'POST',
-				  url: "http://data.vcap.me/v1/query",
-				  async: false,
-				  data: JSON.stringify({
-				    "type": "select",
-				    "args": {
-				      "table": "sellingItems",
-				      "columns" :["price"],
-					  	"where" :{
-				       		"item_id" :itemId,
-					       	"retailer_id": retailerId
-				      }
-				    }
-				  }),
-				  error: function(e) {  
-				    console.log(e);
-				  },
-				  success:function(data){
-			  		//insert values into the item format
-			  		var linkToItem = `/viewItem?item=${itemId}&ret=${retailerId}`;
-				  	var listItem = `<li class="list-group-item"><a href = ${linkToItem} >${itemname}</a> <span class = "remove label label-warning">remove</span><span class="badge">Rs ${data[0].price}</span></li>`
-				  	//append to the list
-				  	$('.list-group').append(listItem);
 
-				  	//totalling the amt
-				  	totalPrice += data[0].price;
-				  },
-				  dataType: "json",
-				  contentType: "application/json"
-				});
-	  		}
-
+	  		//insert values into the item format
+	  		var linkToItem = `/viewItem?item=${data[i].item_id}&ret=${data[i].retailer_id}`;
+		  	var listItem = `<li class="list-group-item"><a href = ${linkToItem} >${data[i].name}</a> 
+		  					<span class = "remove label label-warning">remove</span><span class="badge">Rs ${data[i].price}</span></li>`
+		  	//append to the list
+		  	$('.list-group').append(listItem);
+	  	}
 
 	  	//add remove option on li
 	  	 $('.remove').on('click',function () {
@@ -169,18 +136,36 @@ $(function () {
 				  dataType: "json",
 				  contentType: "application/json"
 				});
-
-
-
 	    });
-
-	  	//totalPrice to be inserted
-	  	$('#totalPrice').html(totalPrice);	
-
 	  },
 	  dataType: "json",
 	  contentType: "application/json"
 	});
+
+    //get total amount from view totalAmt
+    $.ajax({
+		  type: 'POST',
+		  url: "http://data.vcap.me/v1/query",
+		  data: JSON.stringify({
+		    "type": "select",
+		    "args": {
+		      "table": "totalAmt",
+		      "columns":["sum"],
+			  	"where" :{
+			  		"user_id" :user.userid
+			  	}
+		    }
+		  }),
+		  error: function(e) {  
+		    console.log(e);
+		  },
+		  success:function(data){
+		  	//totalPrice to be inserted
+		  	$('#totalPrice').html(data[0].sum);	
+		  },
+		  dataType: "json",
+		  contentType: "application/json"
+		});
 
     //proceed to checkout
     $("#proceedToCheckout").on('click',function(){
