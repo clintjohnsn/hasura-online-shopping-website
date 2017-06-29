@@ -3,7 +3,7 @@ var userid;
 var useremail;
 var user = {username, userid, useremail}
 
-function renderPage(data) {
+var renderPage = function renderPage(data) {
 	//clear the list
 	$('#itemContainer').html('');
 	//if no data obtained, tell user
@@ -33,7 +33,6 @@ function renderPage(data) {
 		$('#itemContainer').append(itemModel);
 	}
 }
-
 
 $(function(){
     //some js for the ui
@@ -235,6 +234,101 @@ $(function(){
 
     });
 
+    //search
+    $("#srchbtn").on("click",function () {
+		var searchTerm = $("#searchTerm").val();
+	   
+	    //make post req to get itemIds from item table matching the req
+        $.ajax({
+		  type: 'POST',
+		  url: "http://data.vcap.me/v1/query",
+		  data: JSON.stringify({
+				"type": "select",
+				"args": {
+					"table": "items",
+					"columns":["id"],
+					"where": {
+						"$or":[
+						{"name": {"$ilike":"%"+searchTerm+"%"}},
+						{"brand":{"$ilike":"%"+searchTerm+"%"}},
+						{"Material":{"$ilike":"%"+searchTerm+"%"}}
+						]
+					}
+				}
+			}),
+		  error: function(e) {  
+		    console.log(e);
+		  },
+		  success:function(data){
+		  	var itemIds = [];
+		  	for (var i = data.length - 1; i >= 0; i--) {
+		  		itemIds.push(data[i].id);
+		  	}
+		  	//post req to get item details of the item_id from sellingItems table
+		  	 $.ajax({
+				  type: 'POST',
+				  url: "http://data.vcap.me/v1/query",
+				  data: JSON.stringify({
+						"type": "select",
+						"args": {
+							"table": "sellingItems",
+							"columns":["item_id","retailer_id","price","added",{
+								
+								"name" :"item_details",
+								"columns":["name","img"]
+								
+							},{
+								
+								"name" :"retailer_details",
+								"columns":["name"]
+							}],
+							"where": {"item_id":{"$in": itemIds }},
+							
+						}
+					}),
+				  error: function(e) {  
+				    console.log(e);
+				  },
+				  success:function(data){
+			  	    //render the items
+				    renderPage(data);
+				  },
+				  dataType: "json",
+				  contentType: "application/json"
+				});
+		  },
+		  dataType: "json",
+		  contentType: "application/json"
+		});
+	});
+
+	//make search work with enter key press
+	$("#searchTerm").keyup(function (e) { //keypress triggers it twice
+		if(e.which === 13){//enter key pressed
+			$("#srchbtn").click();	//trigger search button click event
+		}
+	});
+	//search based on the url
+	//get url
+	 var urlParams;
+      (window.onpopstate = function () {
+          var match,
+              pl     = /\+/g,  // Regex for replacing addition symbol with a space
+              search = /([^&=]+)=?([^&]*)/g,
+              decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+              query  = window.location.search.substring(1);
+
+          urlParams = {};
+          while (match = search.exec(query))
+             urlParams[decode(match[1])] = decode(match[2]);
+      })();
+
+      // if url like /shop?searchTerm=item, urlParams.searchTerm = "item" 
+     if (urlParams.searchTerm){
+     	//search for searchTerm
+     	$('#searchTerm').val(urlParams.searchTerm);
+     	$('#srchbtn').click();//trigger search btn click
+     }
 
 });
 

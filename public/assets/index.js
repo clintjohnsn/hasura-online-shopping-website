@@ -50,5 +50,18 @@ $(function () {
 
 	});
 
+   // search
+    $("#srchbtn").on('click',function(){
+      var searchTerm = $("#searchTerm").val();
+      window.location = `/shop?searchTerm=${searchTerm}`;
+
+    });
+
+      //make search work with enter key press
+  $("#searchTerm").keyup(function (e) { //keypress triggers it twice
+    if(e.which === 13){//enter key pressed
+      $("#srchbtn").click();  //trigger search button click event
+    }
+  });
 
 });

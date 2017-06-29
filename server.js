@@ -18,6 +18,9 @@ app.get('/accountCreation',function(req, res){
 });
 
 app.get('/shop',function(req,res){
+	// var searchTerm = req.query.searchTerm;
+   	//search for the term
+
    res.render('shop'); 
 });
 
