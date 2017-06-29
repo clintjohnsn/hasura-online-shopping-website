@@ -63,8 +63,8 @@ $(function(){
 						});	
 
 	            }
-	            else{
-			  	//add the hasura_id to customUsers table 
+	           
+			  	//add the hasura_id to customUsers table regardless of user or retailer
 	            	
 			  		$.ajax({
 					  type: 'POST',
@@ -83,7 +83,7 @@ $(function(){
 						}),
 					  error: function(e) {	
 					    console.log(e);
-					    alert("FAILED: " + JSON.parse(e.responseText).message);
+					    // alert("FAILED: " + JSON.parse(e.responseText).message);
 					  },
 					  success:function(data){
 					  	window.location = '/shop';	
@@ -92,7 +92,7 @@ $(function(){
 					  contentType: "application/json"
 					});	
 			  	
-	            }
+	            
 			  },
 			  dataType: "json",
 			  contentType: "application/json"

@@ -278,6 +278,9 @@ $(function(){
         success:function(data){
           //add the data as comments
           for (var i = data.length - 1; i >= 0; i--) {
+            if (data[i].review == null){
+              data[i].review = "";
+            }
             //your comment needs to be highlighted cus your'e a special snowflake
             if (data[i].user_id === user.userid ){
               //if you have rated
@@ -439,8 +442,11 @@ $(function(){
           if (data[0].avg_rating == null){
               data[0].avg_rating = 0;
           }
+
           //display the avg rating
-          $("#count-existing").html(data[0].avg_rating);
+          //round to a single decimal
+          var avgRating = data[0].avg_rating.toPrecision(2) 
+          $("#count-existing").html(avgRating);
           //display the no of ratings
           $("#noOfRatings").html(data[0].no_of_ratings);
 
