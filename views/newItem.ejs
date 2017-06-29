@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add an Item | Feelgood.</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <!--    navigation stylesheet-->
+    <link rel="stylesheet" href="/assets/designs.css">
+    <link rel="stylesheet" type="text/css" href="/assets/newItem.css">
+
+    
+</head>
+
+<body>
+    <!--    navigation-->
+     <%include partials/navigation.ejs %>
+    <div class="container">
+        <div class="col-xs-12 col-sm-6 formBackground">
+            <form id="mainForm" method="post" encType="multipart/form-data" action = "/uploadImg"> 
+                <h2>Add a new Item</h2>
+                <label for="name" >Name*</label>
+                <input id="name" class="form-control" placeholder="Name" required autofocus>
+                 <label for="category" >Category*</label>
+
+                <div class="dropdown">
+                  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                  <span id ="category">Casual</span>
+                  <span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#">Casual</a></li>
+                    <li><a href="#">Sport Wear</a></li>
+                    <li><a href="#">Formal</a></li>
+                    <li><a href="#">Ethnic Wear</a></li>
+                    <li><a href="#">Rainwear</a></li>
+                    <li><a href="#">Sleep and Lounge Wear</a></li>
+                    <li><a href="#">Winter</a></li>
+                    <li><a href="#">Summer</a></li>
+                    <li><a href="#">Accessories</a></li>
+                  </ul>
+                </div>  
+        
+                <label for="brand" >Brand*</label>
+                <input id="brand" class="form-control" placeholder="Brand" required autofocus>
+                <label for="Description" >Description</label>
+                <input id="Description" class="form-control" placeholder="Description" autofocus>
+                <label for="Material" >Material</label>
+                <input id="Material" class="form-control" placeholder="Material" autofocus>
+                <label for="price" >Price*</label>
+                <input id="price" class="form-control" placeholder="Price" type="number" required autofocus>
+                <label for="quantity" >Quantity*</label>
+                <input id="quantity" class="form-control" placeholder="Quantity" type="number" required autofocus>
+                   
+
+                <label for="newFile" >Upload a picture</label>
+                <input type="file" name="newFile" multiple />
+                
+                <input type="submit" name="submit" id="btnSubmit" class ="btn btn-warning" value="Add Item" /> 
+            </form>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <<script src="/assets/newItem.js"></script>
+</body>
+</html>

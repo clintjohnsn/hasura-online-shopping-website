@@ -1,10 +1,15 @@
 var express = require('express');
 var app = express();
-
 var ejs = require('ejs');
 app.set('view engine','ejs');
 
 var request = require ('request');
+
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
+
+// var bodyParser = require('body-parser');
+// var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 
 app.use('/',express.static('./public'));
@@ -13,14 +18,36 @@ app.get('/',function(req, res){
    res.sendFile(__dirname+"/public/index.html"); 
 });
 
+app.get('/newItem',function(req, res){
+   res.render('newItem'); 
+});
+
+app.post('/uploadImg',function (req,res) {
+	var newFile = req.files.newFile;
+	  if (!req.files.newFile){
+	    
+	    res.json({"location":"none"});
+
+	  }else{
+	  	//new filename must be unique
+		var filename = Date.now() + newFile.name;
+		//move the file from temporary place that its currently stored in
+		newFile.mv(__dirname + "/public/images/" + filename, function(err) {	
+			if (err)
+		      return res.status(500).send(err);
+		  	var location = "/images/"+filename;
+		  	res.json({"location":location});
+		});
+	  	
+	  }
+});
+
+
 app.get('/accountCreation',function(req, res){
    res.sendFile(__dirname+ "/public/accountCreation.html"); 
 });
 
 app.get('/shop',function(req,res){
-	// var searchTerm = req.query.searchTerm;
-   	//search for the term
-
    res.render('shop'); 
 });
 

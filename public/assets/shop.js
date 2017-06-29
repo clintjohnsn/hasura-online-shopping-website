@@ -16,14 +16,14 @@ var renderPage = function renderPage(data) {
 		var linkToItem = `/viewItem?item=${data[i].item_id}&ret=${data[i].retailer_id}`;
 		//put default img for item if it doesnt exist
 		if(data[i].item_details.img == null){
-			data[i].item_details.img = {"location":"/images/default.png"};
+			data[i].item_details.img = "/images/default.png";
 		}
 		//prepare the item model
 		var itemModel = `<div class="col-xs-12 col-sm-3 item">
 							<a href=${linkToItem}>
 								<figure class="figure">
 									<h3>${data[i].item_details.name}</h3>
-	                            	<img class="img-thumbnail img-responsive mx-auto" src=${data[i].item_details.img.location}>
+	                            	<img class="img-thumbnail img-responsive mx-auto" src=${data[i].item_details.img}>
 	                            	<figcaption class="figure-caption">
 	                            	 ${data[i].retailer_details.name} - Rs ${data[i].price}</figcaption>
 	                        	</figure>
@@ -187,12 +187,7 @@ $(function(){
 				  contentType: "application/json"
 				});
     	}
-    		//if category name is "EVENTS"
-    	else if (categoryName === "events"){
-
-    		console.log(categoryName);
-
-    	}
+    	
     		//for all other category names
     	else{
     		//post req with the "where" = categoryName
