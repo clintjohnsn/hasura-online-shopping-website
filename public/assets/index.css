@@ -32,3 +32,12 @@ html, body {
 #inputEmail, #inputPassword{
     margin-top: 10px;
 }
+
+#footer{
+    /*background-color: grey;*/
+}
+h6{
+    color: white;
+    font-size: 1.05em;
+    text-align: center;
+}

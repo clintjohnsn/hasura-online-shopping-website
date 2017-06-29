@@ -11,6 +11,9 @@ $(function(){
 	 //sign up button implementation
 	$("#signupbtn").on("click",function () {
 
+
+
+
 		if ($("#inputPassword")[0].value === $("#ReInputPassword")[0].value && $("#inputPassword")[0].value.length >= 8 &&
 				$('#inputEmail').val().length != 0 && $('#inputUsername').val().length != 0 
 			){
@@ -29,7 +32,40 @@ $(function(){
 			    // location.reload();
 			  },
 			  success:function(data){
-			  	//now add the hasura_id to customUsers table 
+
+			  	if($('input[type="checkbox"]').prop("checked") == true){
+			  		//add hasura_id to retailers table
+
+			  		$.ajax({
+						  type: 'POST',
+						  url: "http://data.vcap.me/v1/query",
+						  headers: { 'Authorization' : `Bearer ${data.auth_token}` },
+						  data: JSON.stringify({
+								"type": "insert",
+								"args": {
+									"table": "retailers",
+									"objects" :[{
+											"id": data.hasura_id,
+											"name":$("#inputFullname").val(),
+											"location":$('#address').val()
+										}]
+								}
+							}),
+						  error: function(e) {	
+						    console.log(e);
+						    alert("FAILED: " + JSON.parse(e.responseText).message);
+						  },
+						  success:function(data){
+						  	window.location = '/shop';	
+						  },
+						  dataType: "json",
+						  contentType: "application/json"
+						});	
+
+	            }
+	            else{
+			  	//add the hasura_id to customUsers table 
+	            	
 			  		$.ajax({
 					  type: 'POST',
 					  url: "http://data.vcap.me/v1/query",
@@ -40,7 +76,8 @@ $(function(){
 								"table": "usersCustom",
 								"objects" :[{
 										"id": data.hasura_id,
-										"name":$("#inputFullname").val()
+										"name":$("#inputFullname").val(),
+										"address":$('#address').val()
 									}]
 							}
 						}),
@@ -55,13 +92,11 @@ $(function(){
 					  contentType: "application/json"
 					});	
 			  	
-
+	            }
 			  },
 			  dataType: "json",
 			  contentType: "application/json"
 			});
-			
-			
 		}
 		else{
 			if($("#inputPassword")[0].value.length < 8){
@@ -82,9 +117,6 @@ $(function(){
 		}
 	});
 
-
-
-			
 
 });
 

@@ -196,6 +196,32 @@ $(function(){
             $("#changeToLogout").html("Logout");
             $("#signedInUser").html(user.username);
           }
+
+          //check if retailer logged in
+             $.ajax({
+            type: 'POST',
+            url: "http://data.vcap.me/v1/query",
+            data: JSON.stringify({
+              "type": "select",
+              "args": {
+                "table": "retailers",
+                "columns": ["id"],
+                "where":{"id":user.userid}
+              }
+            }),
+            error: function(e) {  
+            },
+            success:function(data){
+               if (!$.isEmptyObject(data)){
+                //user is retailer
+                var addItemBtn = '<a href="/newItem"><button class = "btn btn-success">Add an Item</button></a>';
+                $('.navbar-right').prepend(addItemBtn);
+              }
+            },
+            dataType: "json",
+            contentType: "application/json"
+          });
+             
         },
         dataType: "json",
         contentType: "application/json"
