@@ -62,8 +62,12 @@ app.get('/viewItem',function(req,res){
 	//make a request for itemId
 		//set options for request
 	var options = {
-		uri: 'http://data.vcap.me/v1/query',
+		uri: 'http://data.hasura/v1/query',
 		method: 'POST',
+		 headers: {
+          	"X-Hasura-User-Id":1,
+          	"X-Hasura-Role":"admin"
+	      },
 		json : true,
 		body:{
 			"type": "select",
@@ -87,13 +91,12 @@ app.get('/viewItem',function(req,res){
 	function callback(error, response, body){
 		// console.log(response);
 
-		if(!error && response.statusCode == 200){
-
+		if(!error ){
 		   	res.render('viewItem',{data:body[0]}); 
 
 		}else{
 			console.log(error);
-			res.send("Oops! That's an error");
+			// res.send(error);
 		}
 	}
 

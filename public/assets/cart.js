@@ -28,7 +28,7 @@ $(function () {
     $("#loginbtn").on("click",function(){
       $.ajax({
         type: 'POST',
-        url: "http://auth.vcap.me/user/logout",
+        url: "http://auth.clint.hasura.me/user/logout",
         error: function(e) {  
           console.log(e);
           window.location = '/';
@@ -45,7 +45,7 @@ $(function () {
     //sync because other req need the user id
     $.ajax({
         type: 'POST',
-        url: "http://auth.vcap.me/user/account/info",
+        url: "http://auth.clint.hasura.me/user/account/info",
         async: false,
         error: function(e) {  
         	//tell user they aren't logged in
@@ -71,7 +71,7 @@ $(function () {
 		  	//check if retailer logged in
 	  	   $.ajax({
 			  type: 'POST',
-			  url: "http://data.vcap.me/v1/query",
+			  url: "http://data.clint.hasura.me/v1/query",
 			  data: JSON.stringify({
 			    "type": "select",
 			    "args": {
@@ -104,7 +104,7 @@ $(function () {
     //using view cartInfo
     $.ajax({
 	  type: 'POST',
-	  url: "http://data.vcap.me/v1/query",
+	  url: "http://data.clint.hasura.me/v1/query",
 	  data: JSON.stringify({
 	    "type": "select",
 	    "args": {
@@ -139,7 +139,7 @@ $(function () {
 	    	//post req to delete item
 	    	$.ajax({
 				  type: 'POST',
-				  url: "http://data.vcap.me/v1/query",
+				  url: "http://data.clint.hasura.me/v1/query",
 				  data: JSON.stringify({
 				    "type": "delete",
 				    "args": {
@@ -169,7 +169,7 @@ $(function () {
     //get total amount from view totalAmt
     $.ajax({
 		  type: 'POST',
-		  url: "http://data.vcap.me/v1/query",
+		  url: "http://data.clint.hasura.me/v1/query",
 		  data: JSON.stringify({
 		    "type": "select",
 		    "args": {

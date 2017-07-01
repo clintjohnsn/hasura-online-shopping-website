@@ -16,7 +16,7 @@ $(function () {
 
 			$.ajax({
 			  type: 'POST',
-			  url: "http://auth.vcap.me/login",
+			  url: "http://auth.clint.hasura.me/login",
 			  data: JSON.stringify({
 			    "password":$('#inputPassword').val(),
 			    "email":$('#inputEmail').val()

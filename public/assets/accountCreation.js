@@ -20,7 +20,7 @@ $(function(){
 		
 			$.ajax({
 			  type: 'POST',
-			  url: "http://auth.vcap.me/signup",
+			  url: "http://auth.clint.hasura.me/signup",
 			  data: JSON.stringify({
 			    "username":$('#inputUsername').val(),
 			    "password":$('#inputPassword').val(),
@@ -38,7 +38,7 @@ $(function(){
 
 			  		$.ajax({
 						  type: 'POST',
-						  url: "http://data.vcap.me/v1/query",
+						  url: "http://data.clint.hasura.me/v1/query",
 						  headers: { 'Authorization' : `Bearer ${data.auth_token}` },
 						  data: JSON.stringify({
 								"type": "insert",
@@ -68,7 +68,7 @@ $(function(){
 	            	
 			  		$.ajax({
 					  type: 'POST',
-					  url: "http://data.vcap.me/v1/query",
+					  url: "http://data.clint.hasura.me/v1/query",
 					  headers: { 'Authorization' : `Bearer ${data.auth_token}` },
 					  data: JSON.stringify({
 							"type": "insert",

@@ -5,6 +5,7 @@ var user = {username, userid, useremail}
 
 $(function () {
 
+
 	//dropdown ui
 	 $('.dropdown-menu a').click(function(){
     $('#category').text($(this).text());
@@ -24,7 +25,7 @@ $(function () {
     $("#loginbtn").on("click",function(){
       $.ajax({
         type: 'POST',
-        url: "http://auth.vcap.me/user/logout",
+        url: "http://auth.clint.hasura.me/user/logout",
         error: function(e) {  
           console.log(e);
           window.location = '/';
@@ -40,7 +41,7 @@ $(function () {
     //sync because other req need the user id
     $.ajax({
         type: 'POST',
-        url: "http://auth.vcap.me/user/account/info",
+        url: "http://auth.clint.hasura.me/user/account/info",
         async: false,
         error: function(e) {  
         	//tell user they aren't logged in
@@ -68,7 +69,7 @@ $(function () {
 	      	//post req to submit form data
 	        $.ajax({
                   type: 'POST',
-                  url: "http://data.vcap.me/v1/query",
+                  url: "http://data.clint.hasura.me/v1/query",
                   data: JSON.stringify({
                     "type": "insert",
                     "args": {
@@ -89,7 +90,7 @@ $(function () {
                   	var itemId = data.returning[0].id;
         			$.ajax({
 		                  type: 'POST',
-		                  url: "http://data.vcap.me/v1/query",
+		                  url: "http://data.clint.hasura.me/v1/query",
 		                  data: JSON.stringify({
 		                    "type": "insert",
 		                    "args": {
@@ -99,7 +100,7 @@ $(function () {
 		                    		"retailer_id":user.userid,
 		                    		"price":$('#price').val(),
 		                    		"quantity":$('#quantity').val(),
-		                    		"category":$('#category').val().toLowerCase()
+		                    		"category":$('#category').html().toLowerCase()
 		                    	}]  
 		                    }
 		                  }),
@@ -128,7 +129,7 @@ $(function () {
 								    	//update the new location
 								    	  $.ajax({
 											  type: 'POST',
-											  url: "http://data.vcap.me/v1/query",
+											  url: "http://data.clint.hasura.me/v1/query",
 											  data: JSON.stringify({
 											    "type": "update",
 											    "args": {

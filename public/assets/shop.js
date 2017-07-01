@@ -10,8 +10,10 @@ var renderPage = function renderPage(data) {
 	if(data[0] == null){
 		$('#itemContainer').html('nothing found :(');
 	}
+	var counter = 0;
 	// for all the items in the array data
 	for (var i = 0; i < data.length; i++) {
+		counter++;
 		//prepare the link to the item in /viewItem
 		var linkToItem = `/viewItem?item=${data[i].item_id}&ret=${data[i].retailer_id}`;
 		//put default img for item if it doesnt exist
@@ -23,7 +25,7 @@ var renderPage = function renderPage(data) {
 							<a href=${linkToItem}>
 								<figure class="figure">
 									<h3>${data[i].item_details.name}</h3>
-	                            	<img class="img-thumbnail img-responsive mx-auto" src=${data[i].item_details.img}>
+	                            	<img class="img-thumbnail img-responsive mx-auto backup-img" src=${data[i].item_details.img}>
 	                            	<figcaption class="figure-caption">
 	                            	 ${data[i].retailer_details.name} - Rs ${data[i].price}</figcaption>
 	                        	</figure>
@@ -31,6 +33,14 @@ var renderPage = function renderPage(data) {
 	                    </div> `;	
 		//append the item models
 		$('#itemContainer').append(itemModel);
+
+		 $(".backup-img").on("error", function(){
+	        $(this).attr('src', '/images/default.png');
+	    });
+
+		 if (counter % 4 == 0){
+			$('#itemContainer').append('<div class = "clearfix"></div>');		 	
+		 }
 	}
 }
 
@@ -62,7 +72,7 @@ $(function(){
     $("#loginbtn").on("click",function(){
     	$.ajax({
 			  type: 'POST',
-			  url: "http://auth.vcap.me/user/logout",
+			  url: "http://auth.clint.hasura.me/user/logout",
 			  error: function(e) {	
 			    console.log(e);
 			    window.location = '/';
@@ -79,7 +89,7 @@ $(function(){
     //change login to logout, change signin to user name
     $.ajax({
 			  type: 'POST',
-			  url: "http://auth.vcap.me/user/account/info",
+			  url: "http://auth.clint.hasura.me/user/account/info",
 			  error: function(e) {	
 			    console.log(e);
 
@@ -105,7 +115,7 @@ $(function(){
 			  	//check if retailer logged in
 			  	   $.ajax({
 					  type: 'POST',
-					  url: "http://data.vcap.me/v1/query",
+					  url: "http://data.clint.hasura.me/v1/query",
 					  data: JSON.stringify({
 					    "type": "select",
 					    "args": {
@@ -137,7 +147,7 @@ $(function(){
     //initial req, get "all" items in desc time of adding
     $.ajax({
 		  type: 'POST',
-		  url: "http://data.vcap.me/v1/query",
+		  url: "http://data.clint.hasura.me/v1/query",
 		  data: JSON.stringify({
 		    "type": "select",
 		    "args": {
@@ -188,7 +198,7 @@ $(function(){
 		//post req for all list items
 		   $.ajax({
 				  type: 'POST',
-				  url: "http://data.vcap.me/v1/query",
+				  url: "http://data.clint.hasura.me/v1/query",
 				  data: JSON.stringify({
 				    "type": "select",
 				    "args": {
@@ -220,7 +230,7 @@ $(function(){
     		//post req with the "where" = categoryName
 		   $.ajax({
 				  type: 'POST',
-				  url: "http://data.vcap.me/v1/query",
+				  url: "http://data.clint.hasura.me/v1/query",
 				  data: JSON.stringify({
 				    "type": "select",
 				    "args": {
@@ -263,7 +273,7 @@ $(function(){
 	    //make post req to get itemIds from item table matching the req
         $.ajax({
 		  type: 'POST',
-		  url: "http://data.vcap.me/v1/query",
+		  url: "http://data.clint.hasura.me/v1/query",
 		  data: JSON.stringify({
 				"type": "select",
 				"args": {
@@ -289,7 +299,7 @@ $(function(){
 		  	//post req to get item details of the item_id from sellingItems table
 		  	 $.ajax({
 				  type: 'POST',
-				  url: "http://data.vcap.me/v1/query",
+				  url: "http://data.clint.hasura.me/v1/query",
 				  data: JSON.stringify({
 						"type": "select",
 						"args": {

@@ -151,7 +151,7 @@ $(function(){
     $("#loginbtn").on("click",function(){
       $.ajax({
         type: 'POST',
-        url: "http://auth.vcap.me/user/logout",
+        url: "http://auth.clint.hasura.me/user/logout",
         error: function(e) {  
           console.log(e);
           window.location = '/';
@@ -168,7 +168,7 @@ $(function(){
     //change login to logout, change signin to user name
     $.ajax({
         type: 'POST',
-        url: "http://auth.vcap.me/user/account/info",
+        url: "http://auth.clint.hasura.me/user/account/info",
         async: false,
         error: function(e) {  
 
@@ -200,7 +200,7 @@ $(function(){
           //check if retailer logged in
              $.ajax({
             type: 'POST',
-            url: "http://data.vcap.me/v1/query",
+            url: "http://data.clint.hasura.me/v1/query",
             data: JSON.stringify({
               "type": "select",
               "args": {
@@ -260,7 +260,7 @@ $(function(){
     //fetch all reviews on the item id=urlParams.item
     $.ajax({
         type: 'POST',
-        url: "http://data.vcap.me/v1/query",
+        url: "http://data.clint.hasura.me/v1/query",
         data: JSON.stringify({
           "type": "select",
           "args": {
@@ -334,7 +334,7 @@ $(function(){
       //get user name
        $.ajax({
       type: 'POST',
-      url: "http://data.vcap.me/v1/query",
+      url: "http://data.clint.hasura.me/v1/query",
       data: JSON.stringify({
         "type": "select",
         "args": {
@@ -353,7 +353,7 @@ $(function(){
         //post req to insert the comment
          $.ajax({
             type: 'POST',
-            url: "http://data.vcap.me/v1/query",
+            url: "http://data.clint.hasura.me/v1/query",
             data: JSON.stringify({
               "type": "insert",
               "args": {
@@ -371,7 +371,7 @@ $(function(){
               console.log("There is already a review/ rating, trying to update..")              
               $.ajax({
                   type: 'POST',
-                  url: "http://data.vcap.me/v1/query",
+                  url: "http://data.clint.hasura.me/v1/query",
                   data: JSON.stringify({
                     "type": "update",
                     "args": {
@@ -426,7 +426,7 @@ $(function(){
     //a post req to get aggregate data from the view
     $.ajax({
         type: 'POST',
-        url: "http://data.vcap.me/v1/query",
+        url: "http://data.clint.hasura.me/v1/query",
         data: JSON.stringify({
           "type": "select",
           "args": {
@@ -439,16 +439,27 @@ $(function(){
           console.log(e);
         },
         success:function(data){
-          if (data[0].avg_rating == null){
-              data[0].avg_rating = 0;
-          }
 
-          //display the avg rating
-          //round to a single decimal
-          var avgRating = data[0].avg_rating.toPrecision(2) 
+          var rating;
+          var no_rating;
+          if($.isEmptyObject(data[0])){
+            // console.log(data);
+            rating = 0;
+            no_rating = 0; 
+          }
+          else if (data[0].avg_rating == null){
+            rating = 0;
+            no_rating = 0; 
+          }else{
+            rating = data[0].avg_rating;
+            no_rating = data[0].no_of_ratings;
+          }
+          // display the avg rating
+          // round to a single decimal
+          var avgRating = rating.toPrecision(2) 
           $("#count-existing").html(avgRating);
-          //display the no of ratings
-          $("#noOfRatings").html(data[0].no_of_ratings);
+          // display the no of ratings
+          $("#noOfRatings").html(no_rating);
 
         },
         dataType: "json",
@@ -460,7 +471,7 @@ $(function(){
       //post req to insert
       $.ajax({
         type: 'POST',
-        url: "http://data.vcap.me/v1/query",
+        url: "http://data.clint.hasura.me/v1/query",
         data: JSON.stringify({
           "type": "insert",
           "args": {
@@ -479,7 +490,7 @@ $(function(){
             //post req to update reviews table 
               $.ajax({
                   type: 'POST',
-                  url: "http://data.vcap.me/v1/query",
+                  url: "http://data.clint.hasura.me/v1/query",
                   data: JSON.stringify({
                     "type": "update",
                     "args": {
@@ -520,7 +531,7 @@ $(function(){
        //post req to add to table carts
         $.ajax({
             type: 'POST',
-            url: "http://data.vcap.me/v1/query",
+            url: "http://data.clint.hasura.me/v1/query",
             data: JSON.stringify({
               "type": "insert",
               "args": {
